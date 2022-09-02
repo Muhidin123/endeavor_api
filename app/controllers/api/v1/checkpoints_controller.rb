@@ -1,4 +1,4 @@
-class CheckpointsController < ApplicationController
+class API::V1::CheckpointsController < ApplicationController
   before_action :set_checkpoint, only: %i[ show update destroy ]
 
   # GET /checkpoints
