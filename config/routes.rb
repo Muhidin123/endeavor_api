@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       resources :checkpoints
       resources :trips
       resources :users
+      post '/auth/login', to: 'authentication#login'
     end
   end
 end

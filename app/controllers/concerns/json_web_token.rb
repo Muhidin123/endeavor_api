@@ -1,4 +1,5 @@
 require 'jwt'
+require 'pry'
 
 module JsonWebToken
     extend ActiveSupport::Concern
@@ -6,6 +7,7 @@ module JsonWebToken
     SECRET_KEY = Rails.application.credentials.secret_jwt_key
 
     def jwt_encode(payload, exp=24.hours.from_now)
+        binding.pry
         payload[:exp] = exp.to_i
         JWT.encode(payload, SECRET_KEY)
     end
@@ -21,6 +23,7 @@ module JsonWebToken
 
 
     def user_id_in_token?
+        binding.pry
         header = request.headers['Authorization']
         header = header.split(' ').last if header
         begin
