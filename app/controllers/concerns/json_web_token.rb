@@ -21,7 +21,6 @@ module JsonWebToken
 
 
     def user_id_in_token?
-
         header = request.headers['Authorization']
         header = header.split(' ').last if header
         begin
