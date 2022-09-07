@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_06_011528) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,13 +24,26 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
     t.float "longitude_delta", default: 0.0, null: false
     t.float "latitude_delta", default: 0.0, null: false
     t.string "location", limit: 100, default: "Unknown", null: false
-    t.bigint "trip_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "trip_id"
     t.index ["description"], name: "index_checkpoints_on_description"
     t.index ["location"], name: "index_checkpoints_on_location"
     t.index ["title"], name: "index_checkpoints_on_title"
-    t.index ["trip_id"], name: "index_checkpoints_on_trip_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "record_id"
+    t.bigint "parent_id"
+    t.bigint "reply_id"
+    t.text "content", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_comments_on_parent_id"
+    t.index ["record_id", "parent_id"], name: "index_comments_on_record_id_and_parent_id"
+    t.index ["reply_id"], name: "index_comments_on_reply_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "trips", force: :cascade do |t|
@@ -69,6 +82,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
     t.index ["username"], name: "index_users_on_username"
   end
 
-  add_foreign_key "checkpoints", "trips"
+  add_foreign_key "comments", "comments", column: "parent_id"
+  add_foreign_key "comments", "comments", column: "reply_id"
+  add_foreign_key "comments", "users"
   add_foreign_key "trips", "users"
 end
