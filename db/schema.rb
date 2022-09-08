@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_08_145813) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_08_173255) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,17 +33,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_08_145813) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.integer "record_id"
-    t.bigint "parent_id"
-    t.bigint "reply_id"
-    t.text "content", default: "", null: false
+    t.text "body"
+    t.integer "trip"
+    t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["parent_id"], name: "index_comments_on_parent_id"
-    t.index ["record_id", "parent_id"], name: "index_comments_on_record_id_and_parent_id"
-    t.index ["reply_id"], name: "index_comments_on_reply_id"
-    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "jwt_denylist", force: :cascade do |t|
@@ -103,8 +97,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_08_145813) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "comments", "comments", column: "parent_id"
-  add_foreign_key "comments", "comments", column: "reply_id"
-  add_foreign_key "comments", "users"
   add_foreign_key "trips", "users"
 end
