@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_08_173255) do
 
   create_table "comments", force: :cascade do |t|
     t.text "body"
-    t.integer "trip"
+    t.integer "trip_id"
     t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
