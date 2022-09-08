@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_08_145813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,13 +24,34 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
     t.float "longitude_delta", default: 0.0, null: false
     t.float "latitude_delta", default: 0.0, null: false
     t.string "location", limit: 100, default: "Unknown", null: false
-    t.bigint "trip_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "trip_id"
     t.index ["description"], name: "index_checkpoints_on_description"
     t.index ["location"], name: "index_checkpoints_on_location"
     t.index ["title"], name: "index_checkpoints_on_title"
-    t.index ["trip_id"], name: "index_checkpoints_on_trip_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "record_id"
+    t.bigint "parent_id"
+    t.bigint "reply_id"
+    t.text "content", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_comments_on_parent_id"
+    t.index ["record_id", "parent_id"], name: "index_comments_on_record_id_and_parent_id"
+    t.index ["reply_id"], name: "index_comments_on_reply_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "jwt_denylist", force: :cascade do |t|
+    t.string "jti", null: false
+    t.datetime "exp", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["jti"], name: "index_jwt_denylist_on_jti"
   end
 
   create_table "trips", force: :cascade do |t|
@@ -53,9 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "username", limit: 32, null: false
     t.string "email", limit: 64, null: false
-    t.string "password_digest", limit: 64, null: false
     t.text "bio", default: "", null: false
     t.string "avatar"
     t.string "first_name", limit: 32, default: "", null: false
@@ -65,10 +84,27 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_01_212700) do
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "jti", null: false
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email"
-    t.index ["username"], name: "index_users_on_username"
+    t.index ["jti"], name: "index_users_on_jti", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "checkpoints", "trips"
+  add_foreign_key "comments", "comments", column: "parent_id"
+  add_foreign_key "comments", "comments", column: "reply_id"
+  add_foreign_key "comments", "users"
   add_foreign_key "trips", "users"
 end
